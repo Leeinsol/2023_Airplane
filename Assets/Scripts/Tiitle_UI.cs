@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class Tiitle_UI : MonoBehaviour
 {
+    [SerializeField]
+    GameObject MatchingPanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,5 +32,10 @@ public class Tiitle_UI : MonoBehaviour
         #else
                 Application.Quit();
         #endif
+    }
+
+    public void SetMatchingPanel(bool state)
+    {
+        MatchingPanel.SetActive(state);
     }
 }

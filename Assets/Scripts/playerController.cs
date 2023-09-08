@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class playerController : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class playerController : MonoBehaviour
 
     [SerializeField]
     GameObject gameOverPanel;
+    [SerializeField]
+    GameObject player2;
 
     [SerializeField]
     float bulletRate = 0.5f;
@@ -22,12 +25,16 @@ public class playerController : MonoBehaviour
 
     bool canFire = true;
 
+    Vector3 lastPos;
+    public static event Action<Vector3> changePos;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         gameOverPanel.SetActive(false);
         Time.timeScale = 1;
+        lastPos = transform.position;
     }
 
     // Update is called once per frame
@@ -42,15 +49,25 @@ public class playerController : MonoBehaviour
 
     void Move()
     {
-        float hor = Input.GetAxisRaw("Horizontal");
-        Vector3 moveHorizontal = transform.right * hor;
+        Vector3 currentPos = transform.position;
+        Vector3 relativePositionChange = currentPos - lastPos;
+
+        changePos?.Invoke(relativePositionChange);
+
+        lastPos = currentPos;
+
+        float moveX = speed * Time.deltaTime * Input.GetAxisRaw("Horizontal");
 
         if (Input.GetAxisRaw("Horizontal") != 0)
         {
-            Vector3 velocity;
-            velocity = moveHorizontal.normalized * speed;
+            transform.Translate(moveX, 0, 0);
 
-            rb.MovePosition(transform.position + velocity * Time.deltaTime);
+            Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+
+            viewPos.x = Mathf.Clamp01(viewPos.x);
+
+            Vector3 worldPos = Camera.main.ViewportToWorldPoint(viewPos);
+            transform.position = worldPos;
         }
     }
 
@@ -85,9 +102,4 @@ public class playerController : MonoBehaviour
         }
     }
 
-    void SetTimeScale()
-    {
-        if (gameOverPanel.activeSelf) Time.timeScale = 0;
-        else Time.timeScale = 1;
-    }
 }
