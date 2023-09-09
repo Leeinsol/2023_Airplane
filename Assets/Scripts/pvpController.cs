@@ -32,7 +32,7 @@ public class pvpController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ws = new WebSocket("ws://"+IP()+":3333");
+        ws = new WebSocket("ws://" + IP() + ":3333");
         ws.OnMessage += Message;
         ws.OnOpen += Open;
         ws.OnClose += Close;
@@ -47,35 +47,44 @@ public class pvpController : MonoBehaviour
         //Debug.Log(relativePos);
 
         //SetOpponentDir(relativePos);
-        tmp();
+        //tmp();
+        //Debug.Log(relativePos);
+
+        if (relativePos.x != 0)
+        {
+            Debug.Log(relativePos);
+
+            opponentObj.transform.position -= relativePos;
+        }
+
     }
 
     void Message(object sender, MessageEventArgs e)
     {
+        //Debug.Log("Received message: " + e.Data);
         if (e.Data == "main")
         {
             isStart = true;
         }
         if (e.Data.StartsWith("pos|"))
         {
-            isMove = true;
             string[] data = e.Data.Split('|');
-            if (data.Length == 4)
-            {
-                float x = float.Parse(data[1]);
-                float y = float.Parse(data[2]);
-                float z = float.Parse(data[3]);
-                xPos = x;
-                
-            }
+            float x = float.Parse(data[1]);
+               
+            //Debug.Log(x);
+            relativePos = new Vector3(x, 0, 0);
+            //Debug.Log(relativePos);
         }
     }
 
     void tmp()
     {
+        Debug.Log(isMove);
         if (isMove)
         {
             relativePos = new Vector3(xPos, 0, 0);
+            Debug.Log(relativePos);
+
             opponentObj.transform.position -= relativePos;
             Debug.Log(opponentObj.transform.position);
         }
@@ -85,7 +94,7 @@ public class pvpController : MonoBehaviour
         Debug.Log("open");
     }
 
-    void Close(object sender,CloseEventArgs e)
+    void Close(object sender, CloseEventArgs e)
     {
         Debug.Log("close");
     }
@@ -96,7 +105,6 @@ public class pvpController : MonoBehaviour
         {
             ws.Send("start");
             isReady = true;
-            Debug.Log(isReady);
         }
     }
 
@@ -118,7 +126,7 @@ public class pvpController : MonoBehaviour
     {
         IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
         string localIP = string.Empty;
-        for(int i=0; i<host.AddressList.Length; i++)
+        for (int i = 0; i < host.AddressList.Length; i++)
         {
             if (host.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
             {
@@ -132,17 +140,17 @@ public class pvpController : MonoBehaviour
     void SendRelativePos(Vector3 pos)
     {
         string RelativeData = "pos|" + pos.x + "|" + pos.y + "|" + pos.z;
-
+        //Debug.Log(RelativeData);
         ws.Send(RelativeData);
     }
 
     void SetOpponentDir(Vector3 relativePos)
     {
-        if (opponentObj!=null)
+        if (opponentObj != null)
         {
             opponentObj.transform.position -= relativePos;
         }
-        
+
     }
 
 }

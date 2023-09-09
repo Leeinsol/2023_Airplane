@@ -51,8 +51,7 @@ public class playerController : MonoBehaviour
     {
         Vector3 currentPos = transform.position;
         Vector3 relativePositionChange = currentPos - lastPos;
-
-        changePos?.Invoke(relativePositionChange);
+        
 
         lastPos = currentPos;
 
@@ -68,6 +67,9 @@ public class playerController : MonoBehaviour
 
             Vector3 worldPos = Camera.main.ViewportToWorldPoint(viewPos);
             transform.position = worldPos;
+
+            //Debug.Log(relativePositionChange);
+            changePos?.Invoke(relativePositionChange);
         }
     }
 
@@ -97,9 +99,8 @@ public class playerController : MonoBehaviour
     {
         if (hp <= 0)
         {
-            Time.timeScale = 0; 
+            Time.timeScale = 0;
             gameOverPanel.SetActive(true);
         }
     }
-
 }
