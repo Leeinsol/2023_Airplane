@@ -1,33 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using Photon.Pun;
 
 public class bulletController : MonoBehaviour
 {
     [SerializeField]
-    float speed = 0.5f;
+    float speed = 10f;
 
     float lifetime = 2f;
     float startTime;
+    Vector3 initialDirection;
+    public PhotonView PV;
 
     // Start is called before the first frame update
     void Start()
     {
         startTime = Time.time;
+        GetComponent<Rigidbody2D>().AddForce(transform.up * 10f, ForceMode2D.Impulse);
     }
 
     // Update is called once per frame
     void Update()
     {
-        Move();
 
         if (Time.time - startTime > lifetime) Destroy(this.gameObject);
     }
 
-    void Move()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        //rb.AddForce(transform.up * Speed, ForceMode2D.Impulse);
+        if (!PV.IsMine && collision.tag == "Player" && collision.GetComponent<PhotonView>().IsMine)
+        {
+            collision.GetComponent<playerController>().Hit();
+            PV.RPC("DestroyRPC", RpcTarget.AllBuffered);
 
-        transform.position += new Vector3(0, speed * Time.deltaTime, 0);
-    } 
+        }
+    }
+    [PunRPC]
+    void DestroyRPC() => Destroy(gameObject);
 }

@@ -1,22 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
-
-public class playerController : MonoBehaviour
+using Photon.Pun;
+public class playerController : MonoBehaviourPunCallbacks,IPunObservable
 {
-    Rigidbody2D rb;
 
     [SerializeField]
-    float speed = 50f;
+    float speed = 10f;
 
     [SerializeField]
     GameObject bulletPrefab;
-
-    [SerializeField]
-    GameObject gameOverPanel;
-    [SerializeField]
-    GameObject player2;
 
     [SerializeField]
     float bulletRate = 0.5f;
@@ -25,36 +20,30 @@ public class playerController : MonoBehaviour
 
     bool canFire = true;
 
-    Vector3 lastPos;
-    public static event Action<Vector3> changePos;
+    public PhotonView PV;
+
+    public GameObject UI;
+   
 
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        gameOverPanel.SetActive(false);
-        Time.timeScale = 1;
-        lastPos = transform.position;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        Move();
-        Fire();
-
-        CheckGameOver();
-        //SetTimeScale();
+        if (PV.IsMine)
+        {
+            Move();
+            Fire();
+        }
+        CheckWin();
     }
 
     void Move()
     {
-        Vector3 currentPos = transform.position;
-        Vector3 relativePositionChange = currentPos - lastPos;
-        
-
-        lastPos = currentPos;
-
         float moveX = speed * Time.deltaTime * Input.GetAxisRaw("Horizontal");
 
         if (Input.GetAxisRaw("Horizontal") != 0)
@@ -68,16 +57,15 @@ public class playerController : MonoBehaviour
             Vector3 worldPos = Camera.main.ViewportToWorldPoint(viewPos);
             transform.position = worldPos;
 
-            //Debug.Log(relativePositionChange);
-            changePos?.Invoke(relativePositionChange);
         }
     }
 
     void Fire()
     {
-        if (canFire && Input.GetKeyDown(KeyCode.Space))
+        if (photonView.IsMine && canFire && Input.GetKeyDown(KeyCode.Space))
         {
-            Instantiate(bulletPrefab, transform.GetChild(0).position, transform.rotation);
+            PhotonNetwork.Instantiate("Bullet", transform.GetChild(0).position, transform.rotation);
+            
             StartCoroutine(CoolTime(bulletRate));
         }
     }
@@ -89,18 +77,46 @@ public class playerController : MonoBehaviour
         canFire = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+
+    public void Hit()
     {
         hp--;
-        Destroy(collision.gameObject);
-    }
-
-    void CheckGameOver()
-    {
+        UI.GetComponent<Text>().text = hp.ToString();
         if (hp <= 0)
         {
-            Time.timeScale = 0;
-            gameOverPanel.SetActive(true);
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            PhotonNetwork.LeaveRoom();
+            GameObject panel = GameObject.Find("Canvas").transform.GetChild(0).gameObject;
+            panel.SetActive(true);
+            panel.transform.GetChild(0).GetComponent<Text>().text = "YOU LOSE";
+            PV.RPC("DestroyRPC", RpcTarget.AllBuffered);
+        }
+    }
+
+    [PunRPC]
+    void DestroyRPC() => Destroy(gameObject);
+
+    void CheckWin()
+    {
+        if (PhotonNetwork.CurrentRoom.PlayerCount==1 && !PhotonNetwork.CurrentRoom.IsOpen)
+        {
+            GameObject panel = GameObject.Find("Canvas").transform.GetChild(0).gameObject;
+            panel.SetActive(true);
+            panel.transform.GetChild(0).GetComponent<Text>().text = "YOU WIN";
+
+        }
+    }
+
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(UI.GetComponent<Text>().text);
+        }
+        else
+        {
+            UI.GetComponent<Text>().text = (string)stream.ReceiveNext();
         }
     }
 }
