@@ -64,7 +64,11 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
     {
         if (photonView.IsMine && canFire && Input.GetKeyDown(KeyCode.Space))
         {
-            PhotonNetwork.Instantiate("Bullet", transform.GetChild(0).position, transform.rotation);
+            //PhotonNetwork.Instantiate("Bullet", transform.GetChild(0).position, transform.rotation);
+            var bullet = PoolingManager.instance.GetObject(transform.GetChild(0).position, transform.rotation);
+
+            PhotonView bulletPhotonView = bullet.GetComponent<PhotonView>();
+            bulletPhotonView.RPC("ActivateBullet", RpcTarget.AllBuffered);
             
             StartCoroutine(CoolTime(bulletRate));
         }
