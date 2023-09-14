@@ -37,15 +37,26 @@ public class bulletController : MonoBehaviour
     IEnumerator ReturnToPool()
     {
         yield return new WaitForSecondsRealtime(2f);
+        Debug.Log("ReturnPool");
         PoolingManager.instance.ReturnObject(this.gameObject);
+    }
+
+    void ReturnPool()
+    {
+        Debug.Log("ReturnPool2");
+        PoolingManager.instance.ReturnObject(this.gameObject);
+
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!PV.IsMine && collision.tag == "Player" && collision.GetComponent<PhotonView>().IsMine)
+        if (collision.tag == "Player")
         {
             Debug.Log("Hit");
+            //StartCoroutine(ReturnToPool());
+            ReturnPool();
             collision.GetComponent<playerController>().Hit();
-            PV.RPC("DestroyRPC", RpcTarget.AllBuffered);
+
+            //PV.RPC("DestroyRPC", RpcTarget.AllBuffered);
 
         }
     }
@@ -55,6 +66,7 @@ public class bulletController : MonoBehaviour
     [PunRPC]
     public void ActivateBullet()
     {
+        Debug.Log("activateBullet");
         Shoot();
     }
 }

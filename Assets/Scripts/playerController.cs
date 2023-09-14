@@ -23,6 +23,8 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
     public PhotonView PV;
 
     public GameObject UI;
+
+    public GameObject bullet;
    
 
     // Start is called before the first frame update
@@ -65,10 +67,10 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
         if (photonView.IsMine && canFire && Input.GetKeyDown(KeyCode.Space))
         {
             //PhotonNetwork.Instantiate("Bullet", transform.GetChild(0).position, transform.rotation);
-            var bullet = PoolingManager.instance.GetObject(transform.GetChild(0).position, transform.rotation);
-
-            PhotonView bulletPhotonView = bullet.GetComponent<PhotonView>();
-            bulletPhotonView.RPC("ActivateBullet", RpcTarget.AllBuffered);
+            bullet = PoolingManager.instance.GetObject(transform.GetChild(0).position, transform.rotation);
+            //Debug.Log("fire" + bullet.name);
+            //PhotonView bulletPhotonView = bullet.GetComponent<PhotonView>();
+            bullet.GetComponent<PhotonView>().RPC("ActivateBullet", RpcTarget.AllBuffered);
             
             StartCoroutine(CoolTime(bulletRate));
         }

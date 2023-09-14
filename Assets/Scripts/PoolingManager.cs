@@ -11,13 +11,20 @@ public class PoolingManager : MonoBehaviourPunCallbacks
     public List<GameObject> tmp;
     private void Awake()
     {
-        if(instance!=null && instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
         instance = this;
-        Initialize(3);
+        //Initialize(3);
+        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
+
+        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
+
+        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
+
+
         //poolingManagerQueue.Enqueue(CreateNewObject());
     }
     // Start is called before the first frame update
@@ -34,6 +41,8 @@ public class PoolingManager : MonoBehaviourPunCallbacks
         //    tmp.Add(CreateNewObject());
         //}
         GameObject bullet = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
+        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
+        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
 
     }
 
@@ -61,20 +70,21 @@ public class PoolingManager : MonoBehaviourPunCallbacks
             bullet.transform.rotation = rotation;
             bullet.SetActive(true);
         }
-        
+
         return bullet;
     }
 
     public void ReturnObject(GameObject bullet)
     {
+        Debug.Log("ReturnObject");
         bullet.gameObject.SetActive(false);
         instance.poolingManagerQueue.Enqueue(bullet);
-    } 
+    }
 
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
