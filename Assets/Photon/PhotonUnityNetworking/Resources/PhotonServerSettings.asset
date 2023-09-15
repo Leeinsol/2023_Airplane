@@ -48,6 +48,7 @@ MonoBehaviour:
   - UpdateHP
   - DestroyRPC
   - ActivateBullet
+  - ChangeColor
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

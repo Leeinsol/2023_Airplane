@@ -6,7 +6,10 @@ using UnityEngine.SceneManagement;
 public class Tiitle_UI : MonoBehaviour
 {
     [SerializeField]
-    GameObject MatchingPanel;
+    GameObject matchingPanel;
+
+    [SerializeField]
+    GameObject characterPanel;
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +30,7 @@ public class Tiitle_UI : MonoBehaviour
 
     public void QuitGame()
     {
+        Debug.Log("quit");
         #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
         #else
@@ -36,6 +40,12 @@ public class Tiitle_UI : MonoBehaviour
 
     public void SetMatchingPanel(bool state)
     {
-        MatchingPanel.SetActive(state);
+        matchingPanel.SetActive(state);
     }
+
+    public void SetCharacterPanel(bool state)
+    {
+        characterPanel.SetActive(state);
+    }
+
 }

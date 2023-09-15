@@ -25,12 +25,13 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
     public GameObject UI;
 
     public GameObject bullet;
-   
+
+    SpriteRenderer spriteRenderer;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -124,5 +125,13 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
         {
             UI.GetComponent<Text>().text = (string)stream.ReceiveNext();
         }
+    }
+
+    [PunRPC]
+    public void ChangeColor(float r,float g, float b, float a)
+    {
+        Debug.Log("ChangeColor");
+        Color color = new Color(r, g, b, a);
+        GetComponent<SpriteRenderer>().color = color;
     }
 }

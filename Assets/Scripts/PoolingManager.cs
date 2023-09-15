@@ -18,13 +18,6 @@ public class PoolingManager : MonoBehaviourPunCallbacks
         }
         instance = this;
         //Initialize(3);
-        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
-
-        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
-
-        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
-
-
         //poolingManagerQueue.Enqueue(CreateNewObject());
     }
     // Start is called before the first frame update
@@ -40,9 +33,12 @@ public class PoolingManager : MonoBehaviourPunCallbacks
         //    poolingManagerQueue.Enqueue(CreateNewObject());
         //    tmp.Add(CreateNewObject());
         //}
-        GameObject bullet = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
-        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
-        PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
+        
+        for(int i=0; i<n; i++)
+        {
+            GameObject bullet = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
+            bullet.SetActive(false);
+        }
 
     }
 

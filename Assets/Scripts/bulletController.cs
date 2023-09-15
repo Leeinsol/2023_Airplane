@@ -25,13 +25,14 @@ public class bulletController : MonoBehaviour
     void Update()
     {
 
-        //if (Time.time - startTime > lifetime) Destroy(this.gameObject);
+        //if (Time.time - startTime > lifetime) ReturnPool();
     }
 
     public void Shoot()
     {
         GetComponent<Rigidbody2D>().AddForce(transform.up * 10f, ForceMode2D.Impulse);
-        StartCoroutine(ReturnToPool());
+        //StartCoroutine(ReturnToPool());
+        Invoke("ReturnPool", 2f);
     }
 
     IEnumerator ReturnToPool()
