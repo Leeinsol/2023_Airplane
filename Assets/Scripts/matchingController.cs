@@ -18,7 +18,6 @@ public class matchingController : MonoBehaviourPunCallbacks
     private void Awake()
     {
         PhotonNetwork.ConnectUsingSettings();
-        //OnConnectedToMaster();
     }
 
     public void Connect() => PhotonNetwork.ConnectUsingSettings();
@@ -35,8 +34,11 @@ public class matchingController : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.InRoom && PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
         {
-            //PhotonNetwork.LeaveRoom();
             SceneManager.LoadScene("Main");
+        }
+        if (PhotonNetwork.IsConnected && !startButton.GetComponent<Button>().interactable)
+        {
+            startButton.GetComponent<Button>().interactable = true;
         }
     }
     public void Disconnect() => PhotonNetwork.Disconnect();
@@ -59,36 +61,14 @@ public class matchingController : MonoBehaviourPunCallbacks
     public void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
-        Debug.Log("나감");
-        playerCount--;
-
     }
 
-    public override void OnCreatedRoom() => print("방만들기완료");
-
-    public override void OnJoinedRoom() {
-        print("방참가완료");
-
-        playerCount++;
-
-
-    }
-
-    public override void OnCreateRoomFailed(short returnCode, string message) => print("방만들기실패");
-
-    public override void OnJoinRoomFailed(short returnCode, string message) => print("방참가실패");
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        print("방랜덤참가실패");
         CreateRoom();
-
     }
 
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        Debug.Log("취소");
-    }
 
     public void ClickOptionButton(string option)
     {

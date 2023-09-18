@@ -17,41 +17,26 @@ public class PoolingManager : MonoBehaviourPunCallbacks
             return;
         }
         instance = this;
-        //Initialize(3);
-        //poolingManagerQueue.Enqueue(CreateNewObject());
     }
     // Start is called before the first frame update
     void Start()
     {
-        //Initialize(3);
+
     }
 
     void Initialize(int n)
     {
-        //for (int i = 0; i < n; i++)
-        //{
-        //    poolingManagerQueue.Enqueue(CreateNewObject());
-        //    tmp.Add(CreateNewObject());
-        //}
-        
         for(int i=0; i<n; i++)
         {
             GameObject bullet = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
             bullet.SetActive(false);
         }
-
     }
 
     private GameObject CreateNewObject()
     {
-        Debug.Log("CreateNewObject");
-
-
         GameObject bullet = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
-        Debug.Log(bullet.name);
 
-
-        //bullet.gameObject.SetActive(false);
         return bullet;
 
     }
@@ -72,7 +57,6 @@ public class PoolingManager : MonoBehaviourPunCallbacks
 
     public void ReturnObject(GameObject bullet)
     {
-        Debug.Log("ReturnObject");
         bullet.gameObject.SetActive(false);
         instance.poolingManagerQueue.Enqueue(bullet);
     }

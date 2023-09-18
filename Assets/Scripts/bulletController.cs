@@ -17,34 +17,23 @@ public class bulletController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //Shoot();
-        //startTime = Time.time;
+
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        //if (Time.time - startTime > lifetime) ReturnPool();
     }
 
     public void Shoot()
     {
         GetComponent<Rigidbody2D>().AddForce(transform.up * 10f, ForceMode2D.Impulse);
-        //StartCoroutine(ReturnToPool());
         Invoke("ReturnPool", 2f);
-    }
-
-    IEnumerator ReturnToPool()
-    {
-        yield return new WaitForSecondsRealtime(2f);
-        Debug.Log("ReturnPool");
-        PoolingManager.instance.ReturnObject(this.gameObject);
     }
 
     void ReturnPool()
     {
-        Debug.Log("ReturnPool2");
         PoolingManager.instance.ReturnObject(this.gameObject);
 
     }
@@ -53,12 +42,9 @@ public class bulletController : MonoBehaviour
         if (collision.tag == "Player")
         {
             Debug.Log("Hit");
-            //StartCoroutine(ReturnToPool());
             ReturnPool();
             collision.GetComponent<playerController>().Hit();
-
             //PV.RPC("DestroyRPC", RpcTarget.AllBuffered);
-
         }
     }
     [PunRPC]
@@ -67,7 +53,6 @@ public class bulletController : MonoBehaviour
     [PunRPC]
     public void ActivateBullet()
     {
-        Debug.Log("activateBullet");
         Shoot();
     }
 }

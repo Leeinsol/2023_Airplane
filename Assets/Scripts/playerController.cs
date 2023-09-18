@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using Photon.Pun;
+using TMPro;
 public class playerController : MonoBehaviourPunCallbacks,IPunObservable
 {
 
@@ -17,21 +18,16 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
     float bulletRate = 0.5f;
 
     int hp = 3;
-
     bool canFire = true;
 
     public PhotonView PV;
-
     public GameObject UI;
-
     public GameObject bullet;
-
-    SpriteRenderer spriteRenderer;
 
     // Start is called before the first frame update
     void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+
     }
 
     // Update is called once per frame
@@ -67,10 +63,7 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
     {
         if (photonView.IsMine && canFire && Input.GetKeyDown(KeyCode.Space))
         {
-            //PhotonNetwork.Instantiate("Bullet", transform.GetChild(0).position, transform.rotation);
-            bullet = PoolingManager.instance.GetObject(transform.GetChild(0).position, transform.rotation);
-            //Debug.Log("fire" + bullet.name);
-            //PhotonView bulletPhotonView = bullet.GetComponent<PhotonView>();
+            bullet=PhotonNetwork.Instantiate("Bullet", transform.GetChild(0).position, transform.rotation);
             bullet.GetComponent<PhotonView>().RPC("ActivateBullet", RpcTarget.AllBuffered);
             
             StartCoroutine(CoolTime(bulletRate));
@@ -95,7 +88,7 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
             PhotonNetwork.LeaveRoom();
             GameObject panel = GameObject.Find("Canvas").transform.GetChild(0).gameObject;
             panel.SetActive(true);
-            panel.transform.GetChild(0).GetComponent<Text>().text = "YOU LOSE";
+            panel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "YOU WIN";
             PV.RPC("DestroyRPC", RpcTarget.AllBuffered);
         }
     }
@@ -109,8 +102,8 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
         {
             GameObject panel = GameObject.Find("Canvas").transform.GetChild(0).gameObject;
             panel.SetActive(true);
-            panel.transform.GetChild(0).GetComponent<Text>().text = "YOU WIN";
-
+            panel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "YOU LOSE";
+            PV.RPC("DestroyRPC", RpcTarget.AllBuffered);
         }
     }
 
@@ -130,7 +123,6 @@ public class playerController : MonoBehaviourPunCallbacks,IPunObservable
     [PunRPC]
     public void ChangeColor(float r,float g, float b, float a)
     {
-        Debug.Log("ChangeColor");
         Color color = new Color(r, g, b, a);
         GetComponent<SpriteRenderer>().color = color;
     }
