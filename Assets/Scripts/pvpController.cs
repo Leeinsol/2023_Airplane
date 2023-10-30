@@ -17,14 +17,12 @@ public class pvpController : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("1");
             Vector3 pos = new Vector3(0, -4f, 0);
             Color color = new Color(1f, 0.5f, 0.5f, 1f);
             InstanciateCharacter(pos,color,Quaternion.identity);
         }
         else
         {
-            Debug.Log("2");
             Vector3 pos = new Vector3(0, 4f, 0);
             Color color = new Color(0.5f, 0.5f, 1f, 1f);
             Quaternion rot = Quaternion.Euler(0, 0, -180);
@@ -33,16 +31,13 @@ public class pvpController : MonoBehaviourPunCallbacks
             currentRotation.z += 180f;
             Camera.main.transform.rotation = Quaternion.Euler(currentRotation);
             InstanciateCharacter(pos,color,rot);
-
         }
-
     }
 
 
     void InstanciateCharacter(Vector3 pos, Color color, Quaternion rot)
     {
         string selectedOption = (string)PhotonNetwork.LocalPlayer.CustomProperties["SelectedOption"];
-        Debug.Log("Selected Option: " + selectedOption);
 
         if (selectedOption == "player")
         {

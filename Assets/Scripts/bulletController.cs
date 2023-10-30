@@ -41,10 +41,8 @@ public class bulletController : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            Debug.Log("Hit");
             ReturnPool();
             collision.GetComponent<playerController>().Hit();
-            //PV.RPC("DestroyRPC", RpcTarget.AllBuffered);
         }
     }
     [PunRPC]
